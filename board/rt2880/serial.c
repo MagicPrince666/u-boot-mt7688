@@ -50,11 +50,50 @@ static unsigned long uclk_20M[13]={ // 65000*(b*16*1)/2000000
 	57              // Baud rate 110
 };
 
+#define mtk_soc_reg_read(_addr)		\
+		*(volatile unsigned int *)(KSEG1ADDR(_addr))
+
+#define mtk_soc_reg_write(_addr, _val)	\
+		((*(volatile unsigned int *)KSEG1ADDR(_addr)) = (_val))
+
+#define mtk_soc_reg_read_set(_addr, _mask)	\
+		mtk_soc_reg_write((_addr), (mtk_soc_reg_read((_addr)) | (_mask)))
+
+#define mtk_soc_reg_read_clear(_addr, _mask)	\
+		mtk_soc_reg_write((_addr), (mtk_soc_reg_read((_addr)) & ~(_mask)))
+
+
+#define DEFAULT_UART0_TX 12
+#define DEFAULT_UART0_RX 13
+
 void bbu_uart_init(void)
 {
 	int i;
 	unsigned long div_x, div_y;
 	unsigned long word;
+
+#if 1
+
+	u32 data;
+
+	data = mtk_soc_reg_read(GPIOCTRL0);//set gpio12 output and gpio13 input
+	data = data & (~BIT(DEFAULT_UART0_RX)) | BIT(DEFAULT_UART0_TX;
+	mtk_soc_reg_write(GPIOCTRL0, data);
+
+	data = mtk_soc_reg_read(GPIO_POL_0);
+	data = data & (~BIT(DEFAULT_UART0_TX)) & (~BIT(DEFAULT_UART0_RX));
+	mtk_soc_reg_write(GPIO_POL_0, data);
+
+	data = mtk_soc_reg_read(GPIO_DATA_0);
+	data = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+	mtk_soc_reg_write(GPIO_DATA_0, data);
+
+	data = mtk_soc_reg_read(GPIO_DSET_0);
+	data = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+	mtk_soc_reg_write(GPIO_DSET_0, data);
+	
+
+#endif
 
 	// Set FIFO controo enable, reset RFIFO, TFIFO, 16550 mode, watermark=0x00 (1 byte)
 	ra_outb(CR_UART_FCR, (0x0f|(0x0<<6)));
