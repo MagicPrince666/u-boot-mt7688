@@ -33,6 +33,12 @@
 #include <spi_api.h>
 #include <nand_api.h>
 
+#define BIT(_x) (1 << (_x))
+
+#define DEFAULT_UART0_TX 12
+#define DEFAULT_UART0_RX 13
+
+
 DECLARE_GLOBAL_DATA_PTR;
 #undef DEBUG
 
@@ -716,6 +722,7 @@ void board_init_f(ulong bootflag)
 #if defined (RT6855A_ASIC_BOARD) || defined(RT6855A_FPGA_BOARD)	
 	watchdog_reset();
 #endif
+
 	timer_init();
 	env_init();		/* initialize environment */
 	init_baudrate();		/* initialze baudrate settings */
@@ -1282,6 +1289,29 @@ int check_image_validation(void)
 #endif
 
 
+void uart_gpio_init(){
+
+#if 1
+
+	u32 data;
+
+	data = RALINK_REG(GPIO_CTRL_0);//set gpio12 output and gpio13 input
+	RALINK_REG(GPIO_CTRL_0) = data & (~BIT(DEFAULT_UART0_RX)) | BIT(DEFAULT_UART0_TX);
+
+	data = RALINK_REG(GPIO_POL_0);
+	RALINK_REG(GPIO_POL_0) = data & (~BIT(DEFAULT_UART0_TX)) & (~BIT(DEFAULT_UART0_RX));
+
+	data = RALINK_REG(GPIO_DATA_0);
+	RALINK_REG(GPIO_DATA_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+
+	data = RALINK_REG(GPIO_DSET_0);
+	RALINK_REG(GPIO_DSET_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+	
+
+#endif
+
+}
+
 /************************************************************************
  *
  * This is the next part if the initialization sequence: we are now
@@ -1371,6 +1401,7 @@ void board_init_r (gd_t *id, ulong dest_addr)
 	Init_System_Mode(); /*  Get CPU rate */
 
 #if defined(MT7628_ASIC_BOARD)	/* Enable WLED share pin */
+	uart_gpio_init();
 	RALINK_REG(RALINK_SYSCTL_BASE+0x3C)|= (1<<8);	
 	RALINK_REG(RALINK_SYSCTL_BASE+0x64)&= ~((0x3<<16)|(0x3));
 #endif	
