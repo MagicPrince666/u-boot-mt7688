@@ -9,3 +9,16 @@
 .tmp_config
 /scripts
 /httpd/fsdata.c
+u-boot
+u-boot.map
+u-boot.srec
+tools/mkimage
+System.map
+board/rt2880/.depend
+common/.depend
+cpu/ralink_soc/.depend
+drivers/.depend
+httpd/.depend
+lib_generic/.depend
+lib_mips/.depend
+net/.depend

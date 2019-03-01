@@ -37,6 +37,7 @@
 #define DEFAULT_UART0_TX 12
 #define DEFAULT_UART0_RX 13
 
+
 #if defined(RT6855A_ASIC_BOARD) || defined(RT6855A_FPGA_BOARD)
 static unsigned long uclk_20M[13]={ // 65000*(b*16*1)/2000000
 	59904,          // Baud rate 115200
@@ -103,6 +104,25 @@ void serial_setbrg (void)
 	u32     reg = 0, cpu_clock = 0;
 	u8	clk_sel;
 	u8	clk_sel2;
+#endif
+
+#if 1
+
+	u32 data;
+
+	data = RALINK_REG(GPIO_CTRL_0);//set gpio12 output and gpio13 input
+	RALINK_REG(GPIO_CTRL_0) = data & (~BIT(DEFAULT_UART0_RX)) | BIT(DEFAULT_UART0_TX);
+
+	data = RALINK_REG(GPIO_POL_0);
+	RALINK_REG(GPIO_POL_0) = data & (~BIT(DEFAULT_UART0_TX)) & (~BIT(DEFAULT_UART0_RX));
+
+	data = RALINK_REG(GPIO_DATA_0);
+	RALINK_REG(GPIO_DATA_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+
+	data = RALINK_REG(GPIO_DSET_0);
+	RALINK_REG(GPIO_DSET_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
+	
+
 #endif
 
 	/* 
