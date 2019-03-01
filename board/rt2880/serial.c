@@ -106,25 +106,6 @@ void serial_setbrg (void)
 	u8	clk_sel2;
 #endif
 
-#if 1
-
-	u32 data;
-
-	data = RALINK_REG(GPIO_CTRL_0);//set gpio12 output and gpio13 input
-	RALINK_REG(GPIO_CTRL_0) = data & (~BIT(DEFAULT_UART0_RX)) | BIT(DEFAULT_UART0_TX);
-
-	data = RALINK_REG(GPIO_POL_0);
-	RALINK_REG(GPIO_POL_0) = data & (~BIT(DEFAULT_UART0_TX)) & (~BIT(DEFAULT_UART0_RX));
-
-	data = RALINK_REG(GPIO_DATA_0);
-	RALINK_REG(GPIO_DATA_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
-
-	data = RALINK_REG(GPIO_DSET_0);
-	RALINK_REG(GPIO_DSET_0) = data | BIT(DEFAULT_UART0_TX) | BIT(DEFAULT_UART0_RX);
-	
-
-#endif
-
 	/* 
 	 * CPU_CLK_SEL (bit 21:20)
 	 */
@@ -188,7 +169,7 @@ void serial_setbrg (void)
 	mips_bus_feq = cpu_clock / 2;
 #endif
 
-#if 0
+#if 1
 
 	u32 data;
 
